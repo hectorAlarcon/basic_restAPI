@@ -8,12 +8,24 @@ from data import df as csvdata
 # Represent data by default
 @app.route('/index/') 
 def index():
+    '''
+        Method that displays data on screen ( browser) as a JSON document.
+
+        @returns A JSON document
+    '''
     prod_json = csvdata.to_dict(orient= 'records')
     return jsonify({"Products": prod_json})
 
 #GET data product by ID
 @app.route('/products/product_id/<id>') 
 def getById(id):
+     '''
+        Method that displays a specific product data found by ID on screen 
+
+        @param - Passed from URL 
+            -id : ID of product 
+        @returns A JSON document with the product.  If not found a message is returned instead
+    '''
     id = int(id)
     idx = csvdata[csvdata['id'] == id].index
     product =csvdata.ix[idx]
@@ -26,6 +38,13 @@ def getById(id):
 #GET data product by name 
 @app.route('/products/product_name/<name>') 
 def getByName(name):
+     '''
+        Method that displays a specific product data found by name on screen 
+
+        @param - Passed from URL 
+            -name : name of product 
+        @returns A JSON document with the product. If not found a message is returned instead
+    '''
     idx = csvdata[csvdata['name'] == name].index
     product =csvdata.ix[idx]
     if not product.empty :
@@ -37,6 +56,14 @@ def getByName(name):
 # GET data product by type-> value
 @app.route('/products/<string:type>/<value>') 
 def getByTypeValue(type,value):
+    '''
+        Method that displays specific product/prodcuts data found by type>value on screen 
+
+        @param - Passed from URL 
+            -type : Type to search for the value. Example : color, name, ID.
+            -value : Value itself corresponding to that type. Example : blue, laptop, 15
+        @returns A JSON document with the product/s. If not found a message is returned instead
+    '''
     print(csvdata.head(5))
     if type == 'id': # ID search 
         value = int(value)
@@ -51,6 +78,14 @@ def getByTypeValue(type,value):
 # POST new data into the database
 @app.route('/products/add/', methods=['POST']) 
 def addProduct():
+    '''
+        Method that adds specific product to database (internally)
+
+        ********     The .csv is never modified     ********
+
+        The request has to contain a JSON with the information of new product.
+        @returns A JSON document with the all the products including the new one. 
+    '''
     
     global csvdata # Tells function csvdata is a GLOBAL VARIABLE ! 
     
@@ -76,7 +111,18 @@ def addProduct():
 #PUT new data to already existing data
 @app.route('/products/edit/<int:id_prod>/', methods=['PUT'])
 def editProduct(id_prod):
+    '''
+        Method that EDITS an specific product via ID 
 
+        ********     The .csv is never modified     ********
+
+        The request has to contain a JSON with the information of new information product.
+        IMPORTANT : the ID is not modified in this method.
+
+        @paramenter:
+            - id_prod : ID of product to be modified. 
+        @returns A JSON document with the the modified product. 
+    '''
     idx = csvdata[csvdata['id'] == id_prod].index
     product =csvdata.ix[idx]
 
@@ -94,7 +140,15 @@ def editProduct(id_prod):
 #DELETE data from database
 @app.route('/products/delete/<int:id_prod>/', methods=['DELETE'])
 def deleteProduct(id_prod):
+    '''
+        Method that DELETES a specific product via ID 
 
+        ********     The .csv is never modified     ********
+
+        @paramenter:
+            - id_prod : ID of product to be deleted. 
+        @returns A JSON document with the database. If not found a message is returned instead 
+    '''
     global csvdata 
 
     idx = csvdata[csvdata['id'] == id_prod].index
